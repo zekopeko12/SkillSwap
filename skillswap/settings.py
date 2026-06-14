@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-8n%t_&d!%u4#9m@ltelf-=g)4p45*7_9jw2b6-zd8(2wxu^20q
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['https://skillswap-k1ap.onrender.com/']
+ALLOWED_HOSTS = ['skillswap-k1ap.onrender.com', '127.0.0.1', 'https://skillswap-k1ap.onrender.com/',]
 
 
 # Application definition
