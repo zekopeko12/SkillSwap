@@ -1,0 +1,66 @@
+{% extends "skills/base.html" %}
+
+{% block content %}
+    <h1>My Bookings</h1>
+
+    <div class="sort-controls" style="margin-bottom: 25px;">
+        <label for="sort-select">Sort Bookings By:</label>
+        <select id="sort-select" class="btn-sm" style="width: auto; padding: 5px; border-radius: 8px; border: 1px solid var(--border-color);">
+            <option value="date-asc">Date (Oldest to Newest)</option>
+            <option value="date-desc">Date (Newest to Oldest)</option>
+            <option value="price-asc">Price (Lowest to Highest)</option>
+            <option value="price-desc">Price (Highest to Lowest)</option>
+        </select>
+    </div>
+
+    <h3>As a Student</h3>
+    <div id="student-bookings">
+        {% for booking in as_student %}
+            <div class="card booking-card" data-date="{{ booking.date|date:'c' }}" data-price="{{ booking.listing.price }}">
+                <strong><a href="{% url 'booking_detail' booking.id %}">{{ booking.listing.title }}</a></strong> with {{ booking.listing.teacher.username }}
+                <p>Date: {{ booking.date }} | Status: <span>{{ booking.get_status_display }}</span> | Price: ${{ booking.listing.price }}</p>
+                <div class="flex-group">
+                    {% if booking.status == 'pending' %}
+                        <form method="POST" action="{% url 'cancel_booking' booking.id %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="status" value="cancelled">
+                            <button type="submit" class="btn btn-danger btn-sm">Cancel Request</button>
+                        </form>
+                    {% endif %}
+                    <a href="{% url 'booking_detail' booking.id %}" class="btn btn-sm btn-secondary">View Details</a>
+                </div>
+            </div>
+        {% empty %}
+            <p>You haven't booked any sessions yet.</p>
+        {% endfor %}
+    </div>
+
+    <hr>
+
+    <h3>As a Teacher</h3>
+    <div id="teacher-bookings">
+        {% for booking in as_teacher %}
+            <div class="card booking-card" data-date="{{ booking.date|date:'c' }}" data-price="{{ booking.listing.price }}">
+                <strong><a href="{% url 'booking_detail' booking.id %}">{{ booking.listing.title }}</a></strong> booked by {{ booking.student.username }}
+                <p>Date: {{ booking.date }} | Status: <span>{{ booking.get_status_display }}</span> | Price: ${{ booking.listing.price }}</p>
+                <div class="flex-group">
+                    {% if booking.status == 'pending' %}
+                        <form method="POST" action="{% url 'update_booking_status' booking.id %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="status" value="confirmed">
+                            <button type="submit" class="btn btn-success btn-sm">Accept</button>
+                        </form>
+                        <form method="POST" action="{% url 'update_booking_status' booking.id %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="status" value="cancelled">
+                            <button type="submit" class="btn btn-danger btn-sm">Deny</button>
+                        </form>
+                    {% endif %}
+                    <a href="{% url 'booking_detail' booking.id %}" class="btn btn-sm btn-secondary">View Details</a>
+                </div>
+            </div>
+        {% empty %}
+            <p>No one has booked your listings yet.</p>
+        {% endfor %}
+    </div>
+{% endblock %}

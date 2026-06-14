@@ -1,0 +1,70 @@
+{% extends "skills/base.html" %}
+
+{% block content %}
+<div class="card">
+    <h1>Booking Detail</h1>
+    <div class="booking-info">
+        <h3>{{ booking.listing.title }}</h3>
+        <p><strong>Date and Time:</strong> {{ booking.date }}</p>
+        <p><strong>Current Status:</strong> <span>{{ booking.get_status_display }}</span></p>
+        <hr>
+        <p><strong>Teacher:</strong> <a href="{% url 'user_profile' booking.listing.teacher.username %}">{{ booking.listing.teacher.username }}</a></p>
+        <p><strong>Student:</strong> <a href="{% url 'user_profile' booking.student.username %}">{{ booking.student.username }}</a></p>
+        <p><strong>Price:</strong> ${{ booking.listing.price }}</p>
+    </div>
+
+    {% if booking.status == 'pending' %}
+        <hr>
+        <div class="flex-group">
+            {% if user == booking.listing.teacher %}
+                <form method="POST" action="{% url 'update_booking_status' booking.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="status" value="confirmed">
+                    <button type="submit" class="btn btn-success">Accept Request</button>
+                </form>
+                <form method="POST" action="{% url 'update_booking_status' booking.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="status" value="cancelled">
+                    <button type="submit" class="btn btn-danger">Deny Request</button>
+                </form>
+            {% elif user == booking.student %}
+                <form method="POST" action="{% url 'cancel_booking' booking.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Cancel Request</button>
+                </form>
+            {% endif %}
+        </div>
+    {% elif booking.status == 'confirmed' and user == booking.listing.teacher %}
+        <hr>
+        <form method="POST" action="{% url 'update_booking_status' booking.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="status" value="completed">
+            <button type="submit">Mark as Completed</button>
+        </form>
+    {% elif booking.status == 'completed' %}
+        <hr>
+        <h3>Session Review</h3>
+        {% if booking.review %}
+            <p><strong>Rating:</strong> {{ booking.review.rating }}/5 stars</p>
+            <p><strong>Comment:</strong> {{ booking.review.comment }}</p>
+        {% elif user == booking.student %}
+            <form method="POST" action="{% url 'add_review' booking.id %}">
+                {% csrf_token %}
+                <div>
+                    <label>Rating (1-5):</label>
+                    <input type="number" name="rating" min="1" max="5" required>
+                </div>
+                <div>
+                    <label>Comment:</label>
+                    <textarea name="comment" required placeholder="How was your session?"></textarea>
+                </div>
+                <button type="submit" class="btn-warning">Submit Review</button>
+            </form>
+        {% else %}
+            <p><em>No review has been submitted for this session yet.</em></p>
+        {% endif %}
+    {% endif %}
+    <hr>
+    <a href="{% url 'my_bookings' %}" class="btn btn-secondary">Back to My Bookings</a>
+</div>
+{% endblock %}

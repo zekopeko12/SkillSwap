@@ -1,0 +1,19 @@
+{% extends "skills/base.html" %}
+
+{% block content %}
+    <h1>Your Notifications</h1>
+    <div class="notifications-list">
+        {% for notification in notifications %}
+            <a href="{{ notification.link|default:'' }}{% if not notification.link %}#{% endif %}" class="notification-link">
+                <div class="card {% if not notification.is_read %}notification-unread{% endif %}">
+                    <p>{{ notification.message }}</p>
+                    <small class="text-muted">{{ notification.created_at|timesince }} ago</small>
+                </div>
+            </a>
+        {% empty %}
+            <div class="card">
+                <p>You have no notifications yet.</p>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

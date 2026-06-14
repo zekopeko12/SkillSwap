@@ -1,0 +1,60 @@
+{% extends "skills/base.html" %}
+
+{% block content %}
+    <h1>{% if user == profile.user %}My Profile{% else %}{{ profile.user.username }}'s Profile{% endif %}</h1>
+    <div class="card">
+        <h3>Account Information</h3>
+        {% if profile.profile_picture %}
+            <img src="{{ profile.profile_picture.url }}" alt="{{ profile.user.username }}" class="profile-pic" id="profile-preview">
+        {% else %}
+            <img src="https://ui-avatars.com/api/?name={{ profile.user.username }}&background=4a90e2&color=fff&size=150" alt="{{ profile.user.username }}" class="profile-pic" id="profile-preview">
+        {% endif %}
+        <p><strong>Username:</strong> {{ profile.user.username }}</p>
+        
+        <hr>
+        
+        <h3>Bio {% if user == profile.user %}& Picture{% endif %}</h3>
+        {% if user == profile.user %}
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div>
+                <label>Change Profile Picture:</label>
+                <input type="file" name="profile_picture" id="profile-upload" accept="image/*">
+            </div>
+            <div>
+                <label>Bio:</label>
+                <textarea name="bio" placeholder="Tell us about yourself...">{{ profile.bio }}</textarea>
+            </div>
+            <button type="submit">Update Profile</button>
+        </form>
+        {% else %}
+        <p>{{ profile.bio|default:"This user hasn't added a bio yet." }}</p>
+        {% endif %}
+
+        <hr>
+
+        <h3>Skills I Can Teach</h3>
+        <ul class="listing-list">
+            {% for listing in user_listings %}
+                <li style="margin-bottom: 10px;">
+                    <a href="{% url 'listing_detail' listing.pk %}">{{ listing.title }}</a>
+                    {% if user == profile.user %}
+                    <form method="POST" action="{% url 'delete_listing' listing.pk %}" style="display:inline; margin-left:10px;">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="delete">
+                    <button type="submit" class="btn-danger btn-sm">Delete</button>
+                    </form>
+                    {% endif %}
+                </li>
+            {% empty %}
+                <li><small>
+                    {% if user == profile.user %}
+                        You haven't created any listings yet.
+                    {% else %}
+                        This user hasn't created any listings yet.
+                    {% endif %}
+                </small></li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

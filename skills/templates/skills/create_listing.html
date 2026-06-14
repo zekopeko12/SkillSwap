@@ -1,0 +1,21 @@
+{% extends "skills/base.html" %}
+
+{% block content %}
+    <h1>Create a New Listing</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <div>
+            <label>Title:</label>
+            <input type="text" name="title" required>
+        </div>
+        <div>
+            <label>Description:</label>
+            <textarea name="description" required></textarea>
+        </div>
+        <div>
+            <label>Price ($):</label>
+            <input type="number" name="price" step="0.01" required>
+        </div>
+        <button type="submit" class="btn-success">Post Listing</button>
+    </form>
+{% endblock %}

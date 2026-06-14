@@ -1,0 +1,16 @@
+{% extends "skills/base.html" %}
+
+{% block content %}
+    <div class="card">
+        <h1>{{ listing.title }}</h1>
+        <p><strong>Teacher:</strong> <a href="{% url 'user_profile' listing.teacher.username %}">{{ listing.teacher.username }}</a></p>
+        <p><strong>Price:</strong> ${{ listing.price }}</p>
+        <p><strong>Description:</strong></p>
+        <p>{{ listing.description }}</p>
+        
+        {% if user != listing.teacher %}
+        <hr>
+        <a href="{% url 'create_booking' listing.id %}" class="btn">Book this Session</a>
+        {% endif %}
+    </div>
+{% endblock %}

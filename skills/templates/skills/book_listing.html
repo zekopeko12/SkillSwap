@@ -1,0 +1,14 @@
+{% extends "skills/base.html" %}
+
+{% block content %}
+    <h1>Book: {{ listing.title }}</h1>
+    <p>Please select a date and time for your session with {{ listing.teacher.username }}.</p>
+    <form method="POST">
+        {% csrf_token %}
+        <div>
+            <label>Date and Time:</label>
+            <input type="datetime-local" name="date" required>
+        </div>
+        <button type="submit">Confirm Booking</button>
+    </form>
+{% endblock %}
