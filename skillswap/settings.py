@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-8n%t_&d!%u4#9m@ltelf-=g)4p45*7_9jw2b6-zd8(2wxu^20q
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True') == "True"
 
-ALLOWED_HOSTS = ['skillswap-k1ap.onrender.com', '127.0.0.1', 'https://skillswap-k1ap.onrender.com/',]
+ALLOWED_HOSTS = ['skillswap-k1ap.onrender.com', '127.0.0.1']
 
 
 # Application definition
@@ -44,6 +44,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -135,6 +136,8 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Authentication redirects
 LOGIN_REDIRECT_URL = 'index'
