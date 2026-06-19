@@ -1,35 +1,81 @@
-{% extends "skills/base.html" %}
+{% extends "skills/base.html" %} {% block content %}
+<h1>Available Skills</h1>
+<form
+    method="GET"
+    action="{% url 'listing_list' %}"
+    style="margin-bottom: 25px"
+>
+    <input
+        type="text"
+        name="q"
+        id="skill-search"
+        value="{{ request.GET.q|default:'' }}"
+        placeholder="Search for a skill or teacher..."
+        style="
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            width: 100%;
+        "
+    />
+</form>
 
-{% block content %}
-    <h1>Available Skills</h1>
-    <form method="GET" action="{% url 'listing_list' %}" style="margin-bottom: 25px;">
-        <input type="text" name="q" id="skill-search" 
-               value="{{ request.GET.q|default:'' }}" 
-               placeholder="Search for a skill or teacher..." 
-               style="padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); width: 100%;">
-    </form>
+<div class="sort-controls" style="margin-bottom: 25px">
+    <label for="listing-sort-select">Sort By:</label>
+    <select
+        id="listing-sort-select"
+        class="btn-sm"
+        style="
+            width: auto;
+            padding: 5px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        "
+    >
+        <option value="date-desc">Newest First</option>
+        <option value="date-asc">Oldest First</option>
+        <option value="price-asc">Price (Lowest to Highest)</option>
+        <option value="price-desc">Price (Highest to Lowest)</option>
+    </select>
+</div>
 
-    <div class="sort-controls" style="margin-bottom: 25px;">
-        <label for="listing-sort-select">Sort By:</label>
-        <select id="listing-sort-select" class="btn-sm" style="width: auto; padding: 5px; border-radius: 8px; border: 1px solid var(--border-color);">
-            <option value="date-desc">Newest First</option>
-            <option value="date-asc">Oldest First</option>
-            <option value="price-asc">Price (Lowest to Highest)</option>
-            <option value="price-desc">Price (Highest to Lowest)</option>
-        </select>
+<div
+    id="no-results"
+    class="card"
+    style="display: none; text-align: center; color: var(--secondary-color)"
+>
+    No listings found matching your search.
+</div>
+<div id="listings-container">
+    {% for listing in listings %}
+    <div
+        class="card listing-card"
+        data-date="{{ listing.created_at|date:'c' }}"
+        data-price="{{ listing.price }}"
+    >
+        <h2>
+            <a href="{% url 'listing_detail' listing.pk %}"
+                >{{ listing.title }}</a
+            >
+        </h2>
+        <p>
+            Teacher:
+            <a
+                href="{% url 'user_profile' listing.teacher.username %}"
+                class="teacher-link"
+                >{{ listing.teacher.username }}</a
+            >
+        </p>
+
+        <p class="listing-age" data-date="{{ listing.created_at|date:'c' }}">
+            Posted recently
+        </p>
+
+        <p>Price: ${{ listing.price }}</p>
+        <p>{{ listing.description|truncatewords:20 }}</p>
     </div>
-
-    <div id="no-results" class="card" style="display: none; text-align: center; color: var(--secondary-color);">No listings found matching your search.</div>
-    <div id="listings-container">
-        {% for listing in listings %}
-            <div class="card listing-card" data-date="{{ listing.created_at|date:'c' }}" data-price="{{ listing.price }}">
-                <h2><a href="{% url 'listing_detail' listing.pk %}">{{ listing.title }}</a></h2>
-                <p>Teacher: <a href="{% url 'user_profile' listing.teacher.username %}">{{ listing.teacher.username }}</a></p>
-                <p>Price: ${{ listing.price }}</p>
-                <p>{{ listing.description|truncatewords:20 }}</p>
-            </div>
-        {% empty %}
-            <p>No listings available yet.</p>
-        {% endfor %}
-    </div>
+    {% empty %}
+    <p>No listings available yet.</p>
+    {% endfor %}
+</div>
 {% endblock %}
